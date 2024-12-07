@@ -1,0 +1,22 @@
+{
+  "name": "my-agent-assistant",
+  "version": "0.1.0",
+  "license": "Proprietary",
+  "scripts": {
+    "shopify": "shopify",
+    "build": "shopify app build",
+    "dev": "shopify app dev",
+    "info": "shopify app info",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy"
+  },
+  "dependencies": {},
+  "trustedDependencies": [
+    "@shopify/plugin-cloudflare"
+  ],
+  "author": "wceverything",
+  "private": true,
+  "workspaces": [
+    "extensions/*"
+  ]
+}
