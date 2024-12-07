@@ -1,0 +1,28 @@
+name = "My Assistant Agent"
+type = "theme"
+handle = "wc-agent-tooltip"
+
+[[extensions]]
+handle = "wc-agent-tooltip"
+name = "AI Agent Tooltip"
+type = "theme"
+target = "body"
+
+[[assets]]
+path = "assets/wc_agent_tooltip.css"
+
+[[assets]]
+path = "assets/wc_agent_tooltip.js"
+
+[[assets]]
+path = "assets/chat-icon.png"
+
+[[assets]]
+path = "assets/voice-chat-icon.png"
+
+[[blocks]]
+path = "blocks/wc_agent_tooltip.liquid"
+
+[settings]
+    enable_text_chat = true
+    enable_voice_chat = true

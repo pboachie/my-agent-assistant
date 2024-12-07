@@ -1,0 +1,205 @@
+{% schema %}
+{
+  "name": "Agent Assistant Tooltip",
+  "target": "body",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Interaction Settings"
+    },
+    {
+      "type": "select",
+      "id": "default_mode",
+      "label": "Default Interaction Mode",
+      "options": [
+        { "value": "chat", "label": "Text Chat" },
+        { "value": "voice", "label": "Voice Chat" }
+      ],
+      "default": "chat"
+    },
+    {
+      "type": "text",
+      "id": "welcome_message",
+      "label": "Welcome Message",
+      "default": "Hi there! How can I help you today?"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_drag",
+      "label": "Enable Draggable Chat Window",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_voice",
+      "label": "Enable Voice Interaction",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Agent Settings"
+    },
+    {
+      "type": "text",
+      "id": "agent_name",
+      "label": "Agent Name",
+      "default": "Alex"
+    },
+    {
+      "type": "image_picker",
+      "id": "agent_avatar",
+      "label": "Agent Avatar"
+    },
+    {
+      "type": "header",
+      "content": "Color Scheme"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Color",
+      "default": "#0055ff"
+    },
+    {
+      "type": "color",
+      "id": "secondary_color",
+      "label": "Secondary Color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "message_color",
+      "label": "Agent Message Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "font_family",
+      "label": "Font Family",
+      "options": [
+        { "value": "system", "label": "System Default" },
+        { "value": "helvetica", "label": "Helvetica Neue" },
+        { "value": "roboto", "label": "Roboto" },
+        { "value": "inter", "label": "Inter" },
+        { "value": "arial", "label": "Arial" }
+      ],
+      "default": "system"
+    },
+    {
+      "type": "range",
+      "id": "base_font_size",
+      "label": "Base Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font Weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Button & Bubble Styles"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "rounded", "label": "Rounded" },
+        { "value": "pill", "label": "Pill" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "rounded"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Button Size",
+      "min": 32,
+      "max": 56,
+      "step": 4,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "select",
+      "id": "bubble_style",
+      "label": "Message Bubble Style",
+      "options": [
+        { "value": "modern", "label": "Modern (Rounded)" },
+        { "value": "classic", "label": "Classic (With Tail)" },
+        { "value": "minimal", "label": "Minimal (Sharp)" }
+      ],
+      "default": "modern"
+    },
+    {
+      "type": "range",
+      "id": "bubble_radius",
+      "label": "Bubble Corner Radius",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Window Size"
+    },
+    {
+      "type": "range",
+      "id": "window_width",
+      "label": "Chat Window Width",
+      "min": 280,
+      "max": 480,
+      "step": 20,
+      "default": 380,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "window_height",
+      "label": "Chat Window Height",
+      "min": 400,
+      "max": 720,
+      "step": 40,
+      "default": 520,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "window_position",
+      "label": "Window Position",
+      "options": [
+        { "value": "bottom-right", "label": "Bottom Right" },
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "top-left", "label": "Top Left" }
+      ],
+      "default": "bottom-right"
+    }
+  ]
+}
+{% endschema %}
+
+{% render 'wc_agent_tooltip' %}

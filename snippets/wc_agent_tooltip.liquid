@@ -1,0 +1,115 @@
+{% comment %}
+  Auto-inject chat tooltip into theme
+{% endcomment %}
+
+{{ 'wc_agent_tooltip.css' | asset_url | stylesheet_tag }}
+
+<div class="wc-agent-tooltip" data-draggable="{{ settings.enable_drag }}">
+  <!-- Minimized Tooltip Button -->
+  <div class="tooltip-button" id="tooltip-button">
+    <div class="tooltip-icon">
+      {% if settings.agent_avatar %}
+        <img src="{{ settings.agent_avatar | image_url: width: 60, height: 60, crop: 'center' }}" alt="Agent Avatar" class="agent-avatar" width="60" height="60">
+      {% else %}
+        <svg viewBox="0 0 24 24">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+      {% endif %}
+    </div>
+    <div class="tooltip-preview">
+      <span>Speak to an Agent</span>
+    </div>
+  </div>
+
+  <!-- Expanded Chat Window -->
+  <div class="tooltip-window">
+    <!-- Header -->
+    <div class="tooltip-header">
+      <div class="agent-info">
+        <div class="agent-avatar-small">
+          {% if settings.agent_avatar %}
+            <img src="{{ settings.agent_avatar | image_url: width: 32, height: 32, crop: 'center' }}" alt="Agent Avatar" width="32" height="32">
+          {% else %}
+            <div class="avatar-placeholder">{{ settings.agent_name | slice: 0 }}</div>
+          {% endif %}
+        </div>
+        <div class="agent-details">
+          <span class="agent-name">{{ settings.agent_name }}</span>
+          <span class="agent-status" id="agent-status">Online</span>
+        </div>
+      </div>
+      <div class="header-controls">
+        {% if settings.enable_voice %}
+          <button class="control-button voice-toggle" id="voice-toggle" title="Switch to Voice">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
+        {% endif %}
+        <button class="control-button minimize" id="minimize-chat" title="Minimize">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 13H5v-2h14v2z"/>
+          </svg>
+        </button>
+        <button class="control-button close" id="close-chat" title="Close">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Content -->
+    <div class="tooltip-content">
+      <div class="messages-container">
+        <!-- Messages will be inserted here -->
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <!-- Voice Indicator -->
+      <div class="voice-indicator">
+        <div class="voice-waves">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="voice-status">Listening...</span>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <div class="input-container">
+        <input
+          type="text"
+          class="message-input"
+          placeholder="Type your message..."
+          aria-label="Message"
+        >
+        <button class="send-button" title="Send Message">
+          <svg viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Initialize settings for JavaScript
+  window.wcAgentSettings = {
+    enable_voice: {{ settings.enable_voice | json }},
+    enable_drag: {{ settings.enable_drag | json }},
+    welcome_message: {{ settings.welcome_message | json }},
+    default_mode: {{ settings.default_mode | json }}
+  };
+</script>
