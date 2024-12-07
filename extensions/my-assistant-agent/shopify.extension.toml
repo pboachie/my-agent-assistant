@@ -1,28 +1,43 @@
 name = "My Assistant Agent"
-type = "theme"
+type = "theme_app_extension"
 handle = "wc-agent-tooltip"
-
-[[extensions]]
-handle = "wc-agent-tooltip"
-name = "AI Agent Tooltip"
-type = "theme"
-target = "body"
-
-[[assets]]
-path = "assets/wc_agent_tooltip.css"
-
-[[assets]]
-path = "assets/wc_agent_tooltip.js"
-
-[[assets]]
-path = "assets/chat-icon.png"
-
-[[assets]]
-path = "assets/voice-chat-icon.png"
-
-[[blocks]]
-path = "blocks/wc_agent_tooltip.liquid"
 
 [settings]
-    enable_text_chat = true
-    enable_voice_chat = true
+enable_text_chat = true
+enable_voice_chat = true
+button_style = "rounded"
+window_position = "bottom-right"
+
+[[extensions]]
+type = "theme_app_extension"
+handle = "wc-agent-tooltip"
+name = "AI Agent Tooltip"
+
+[extensions.settings]
+type = "object"
+fields = [
+  { key = "enable_text_chat", type = "boolean", required = true },
+  { key = "enable_voice_chat", type = "boolean", required = true }
+]
+
+[[extensions.blocks]]
+type = "theme_app_block"
+name = "Agent Tooltip"
+target = "body"
+template = "blocks/wc_agent_tooltip.liquid"
+
+[[extensions.assets]]
+name = "wc_agent_tooltip.css"
+path = "assets/wc_agent_tooltip.css"
+
+[[extensions.assets]]
+name = "wc_agent_tooltip.js"
+path = "assets/wc_agent_tooltip.js"
+
+[[extensions.assets]]
+name = "chat-icon"
+path = "assets/chat-icon.png"
+
+[[extensions.assets]]
+name = "voice-chat-icon"
+path = "assets/voice-chat-icon.png"

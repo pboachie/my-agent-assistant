@@ -1,3 +1,8 @@
+{% comment %}
+  App: My Assistant Agent
+  Properly inject the chat tooltip into theme
+{% endcomment %}
+
 {% schema %}
 {
   "name": "Agent Assistant Tooltip",
@@ -34,6 +39,12 @@
       "id": "enable_voice",
       "label": "Enable Voice Interaction",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "voice_welcome_message",
+      "label": "Voice Welcome Message",
+      "default": "Hello, how can I help you today?"
     },
     {
       "type": "header",
@@ -127,7 +138,8 @@
       "options": [
         { "value": "rounded", "label": "Rounded" },
         { "value": "pill", "label": "Pill" },
-        { "value": "square", "label": "Square" }
+        { "value": "square", "label": "Square" },
+        { "value": "circle", "label": "Circle" }
       ],
       "default": "rounded"
     },

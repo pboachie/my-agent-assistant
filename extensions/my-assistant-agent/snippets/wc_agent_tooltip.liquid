@@ -4,20 +4,34 @@
 
 {{ 'wc_agent_tooltip.css' | asset_url | stylesheet_tag }}
 
-<div class="wc-agent-tooltip" data-draggable="{{ settings.enable_drag }}">
+<div class="wc-agent-tooltip"
+  data-draggable="{{ settings.enable_drag }}"
+  data-position="{{ settings.window_position }}"
+  data-settings="{{ settings | json | escape }}"
+  style="
+    --primary-color: {{ settings.primary_color }};
+    --secondary-color: {{ settings.secondary_color }};
+    --text-color: {{ settings.text_color }};
+    --message-color: {{ settings.message_color }};
+    --font-family: {{ settings.font_family }};
+    --base-font-size: {{ settings.base_font_size }}px;
+    --font-weight: {{ settings.font_weight }};
+    --button-size: {{ settings.button_size }}px;
+    --window-width: {{ settings.window_width }}px;
+    --window-height: {{ settings.window_height }}px;
+    --bubble-radius: {{ settings.bubble_radius }}px;
+  ">
   <!-- Minimized Tooltip Button -->
-  <div class="tooltip-button" id="tooltip-button">
+  <div class="tooltip-button {{ settings.button_style }}" id="tooltip-button">
     <div class="tooltip-icon">
-      {% if settings.agent_avatar %}
-        <img src="{{ settings.agent_avatar | image_url: width: 60, height: 60, crop: 'center' }}" alt="Agent Avatar" class="agent-avatar" width="60" height="60">
+      {% if settings.agent_avatar != blank %}
+        <img src="{{ settings.agent_avatar | image_url: width: 60 }}" alt="{{ settings.agent_name }}" class="agent-avatar" width="60" height="60">
       {% else %}
-        <svg viewBox="0 0 24 24">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-        </svg>
+        <div class="avatar-placeholder">{{ settings.agent_name | slice: 0, 1 }}</div>
       {% endif %}
     </div>
     <div class="tooltip-preview">
-      <span>Speak to an Agent</span>
+      <span>{{ settings.button_text | default: 'Speak to an Agent' }}</span>
     </div>
   </div>
 
@@ -27,10 +41,10 @@
     <div class="tooltip-header">
       <div class="agent-info">
         <div class="agent-avatar-small">
-          {% if settings.agent_avatar %}
-            <img src="{{ settings.agent_avatar | image_url: width: 32, height: 32, crop: 'center' }}" alt="Agent Avatar" width="32" height="32">
+          {% if settings.agent_avatar != blank %}
+            <img src="{{ settings.agent_avatar | image_url: width: 32, height: 32, crop: 'center' }}" alt="{{ settings.agent_name }}" width="32" height="32">
           {% else %}
-            <div class="avatar-placeholder">{{ settings.agent_name | slice: 0 }}</div>
+            <div class="avatar-placeholder">{{ settings.agent_name | slice: 0 | upcase }}</div>
           {% endif %}
         </div>
         <div class="agent-details">
@@ -62,7 +76,7 @@
 
     <!-- Chat Content -->
     <div class="tooltip-content">
-      <div class="messages-container">
+      <div class="messages-container" id="messages-container">
         <!-- Messages will be inserted here -->
       </div>
 
@@ -81,7 +95,7 @@
           <span></span>
           <span></span>
         </div>
-        <span class="voice-status">Listening...</span>
+        <span class="voice-status">{{ settings.voice_welcome_message }}</span>
       </div>
     </div>
 
@@ -91,10 +105,11 @@
         <input
           type="text"
           class="message-input"
-          placeholder="Type your message..."
+          id="message-input"
+          placeholder="{{ settings.input_placeholder | default: 'Type your message...' }}"
           aria-label="Message"
         >
-        <button class="send-button" title="Send Message">
+        <button class="send-button" id="send-button" title="Send Message">
           <svg viewBox="0 0 24 24">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
@@ -107,9 +122,26 @@
 <script>
   // Initialize settings for JavaScript
   window.wcAgentSettings = {
+    primary_color: {{ settings.primary_color | json }},
+    secondary_color: {{ settings.secondary_color | json }},
+    text_color: {{ settings.text_color | json }},
+    message_color: {{ settings.message_color | json }},
+    font_family: {{ settings.font_family | json }},
+    base_font_size: {{ settings.base_font_size | json }},
+    font_weight: {{ settings.font_weight | json }},
+    button_size: {{ settings.button_size | json }},
+    window_width: {{ settings.window_width | json }},
+    window_height: {{ settings.window_height | json }},
+    bubble_radius: {{ settings.bubble_radius | json }},
+    button_style: {{ settings.button_style | json }},
+    window_position: {{ settings.window_position | json }},
+    agent_name: {{ settings.agent_name | json }},
+    agent_avatar: {% if settings.agent_avatar != blank %}{{ settings.agent_avatar | image_url: width: 60 | json }}{% else %}null{% endif %},
+    welcome_message: {{ settings.welcome_message | json }},
     enable_voice: {{ settings.enable_voice | json }},
     enable_drag: {{ settings.enable_drag | json }},
-    welcome_message: {{ settings.welcome_message | json }},
-    default_mode: {{ settings.default_mode | json }}
+    voice_welcome_message: {{ settings.voice_welcome_message | json }}
   };
 </script>
+
+<script src="{{ 'wc_agent_tooltip.js' | asset_url }}" defer></script>
