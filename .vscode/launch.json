@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run shopify app dev",
+            "runtimeExecutable": "shopify",
+            "runtimeArgs": ["app", "dev"],
+            "cwd": "/mnt/c/Users/Prince/Documents/my-agent-assistant",
+            "console": "integratedTerminal"
+        }
+    ]
+}

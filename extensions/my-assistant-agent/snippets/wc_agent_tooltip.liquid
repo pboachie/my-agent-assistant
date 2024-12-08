@@ -1,36 +1,40 @@
 {% comment %}
-  Auto-inject chat tooltip into theme
+  Auto-inject chat tooltip into theme with proper settings handling
 {% endcomment %}
 
 {{ 'wc_agent_tooltip.css' | asset_url | stylesheet_tag }}
 
-<div class="wc-agent-tooltip"
-  data-draggable="{{ settings.enable_drag }}"
-  data-position="{{ settings.window_position }}"
+<div
+  class="wc-agent-tooltip"
   data-settings="{{ settings | json | escape }}"
-  style="
-    --primary-color: {{ settings.primary_color }};
-    --secondary-color: {{ settings.secondary_color }};
-    --text-color: {{ settings.text_color }};
-    --message-color: {{ settings.message_color }};
-    --font-family: {{ settings.font_family }};
-    --base-font-size: {{ settings.base_font_size }}px;
-    --font-weight: {{ settings.font_weight }};
-    --button-size: {{ settings.button_size }}px;
-    --window-width: {{ settings.window_width }}px;
-    --window-height: {{ settings.window_height }}px;
-    --bubble-radius: {{ settings.bubble_radius }}px;
-  ">
+  data-position="{{ settings.window_position | default: 'bottom-right' }}"
+  data-draggable="{{ settings.enable_drag | default: false }}"
+>
   <!-- Minimized Tooltip Button -->
-  <div class="tooltip-button {{ settings.button_style }}" id="tooltip-button">
+  <div
+    class="tooltip-button {% if settings.button_style %}{{ settings.button_style }}{% else %}rounded{% endif %}"
+    id="tooltip-button"
+    style="
+      width: {% if settings.button_style == 'circle' %}{{ settings.button_size }}px{% endif %};
+      height: {% if settings.button_style == 'circle' %}{{ settings.button_size }}px{% endif %};
+    "
+  >
     <div class="tooltip-icon">
       {% if settings.agent_avatar != blank %}
-        <img src="{{ settings.agent_avatar | image_url: width: 60 }}" alt="{{ settings.agent_name }}" class="agent-avatar" width="60" height="60">
+        <img
+          src="{{ settings.agent_avatar | image_url: width: 60 }}"
+          alt="{{ settings.agent_name | escape }}"
+          class="agent-avatar"
+          width="60"
+          height="60"
+        >
       {% else %}
-        <div class="avatar-placeholder">{{ settings.agent_name | slice: 0, 1 }}</div>
+        <div class="avatar-placeholder">
+          {{- settings.agent_name | default: 'Agent' | slice: 0, 1 | upcase -}}
+        </div>
       {% endif %}
     </div>
-    <div class="tooltip-preview">
+    <div class="tooltip-preview {% if settings.button_style == 'circle' %}hidden{% endif %}">
       <span>{{ settings.button_text | default: 'Speak to an Agent' }}</span>
     </div>
   </div>
@@ -44,11 +48,11 @@
           {% if settings.agent_avatar != blank %}
             <img src="{{ settings.agent_avatar | image_url: width: 32, height: 32, crop: 'center' }}" alt="{{ settings.agent_name }}" width="32" height="32">
           {% else %}
-            <div class="avatar-placeholder">{{ settings.agent_name | slice: 0 | upcase }}</div>
+            <div class="avatar-placeholder">{{ settings.agent_name | default: 'Agent' | slice: 0, 1 | upcase }}</div>
           {% endif %}
         </div>
         <div class="agent-details">
-          <span class="agent-name">{{ settings.agent_name }}</span>
+          <span class="agent-name">{{ settings.agent_name | default: 'Agent' }}</span>
           <span class="agent-status" id="agent-status">Online</span>
         </div>
       </div>
@@ -88,15 +92,17 @@
       </div>
 
       <!-- Voice Indicator -->
-      <div class="voice-indicator">
-        <div class="voice-waves">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
+      {% if settings.enable_voice %}
+        <div class="voice-indicator">
+          <div class="voice-waves">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span class="voice-status">{{ settings.voice_welcome_message }}</span>
         </div>
-        <span class="voice-status">{{ settings.voice_welcome_message }}</span>
-      </div>
+      {% endif %}
     </div>
 
     <!-- Input Area -->
@@ -120,28 +126,48 @@
 </div>
 
 <script>
-  // Initialize settings for JavaScript
-  window.wcAgentSettings = {
-    primary_color: {{ settings.primary_color | json }},
-    secondary_color: {{ settings.secondary_color | json }},
-    text_color: {{ settings.text_color | json }},
-    message_color: {{ settings.message_color | json }},
-    font_family: {{ settings.font_family | json }},
-    base_font_size: {{ settings.base_font_size | json }},
-    font_weight: {{ settings.font_weight | json }},
-    button_size: {{ settings.button_size | json }},
-    window_width: {{ settings.window_width | json }},
-    window_height: {{ settings.window_height | json }},
-    bubble_radius: {{ settings.bubble_radius | json }},
-    button_style: {{ settings.button_style | json }},
-    window_position: {{ settings.window_position | json }},
-    agent_name: {{ settings.agent_name | json }},
-    agent_avatar: {% if settings.agent_avatar != blank %}{{ settings.agent_avatar | image_url: width: 60 | json }}{% else %}null{% endif %},
-    welcome_message: {{ settings.welcome_message | json }},
-    enable_voice: {{ settings.enable_voice | json }},
-    enable_drag: {{ settings.enable_drag | json }},
-    voice_welcome_message: {{ settings.voice_welcome_message | json }}
-  };
+  // Initialize settings with proper defaults and validation
+  window.wcAgentSettings = (function() {
+    const defaults = {
+      primary_color: '#0055ff',
+      secondary_color: '#f8f9fa',
+      text_color: '#1a1a1a',
+      message_color: '#ffffff',
+      font_family: 'system',
+      base_font_size: 14,
+      font_weight: '400',
+      button_style: 'rounded',
+      button_size: 44,
+      window_width: 380,
+      window_height: 520,
+      window_position: 'bottom-right',
+      bubble_radius: 16,
+      agent_name: 'Agent',
+      welcome_message: 'Hi there! How can I help you today?',
+      button_text: 'Speak to an Agent',
+      input_placeholder: 'Type your message...',
+      enable_voice: {{ settings.enable_voice | default: false | json }},
+      enable_drag: {{ settings.enable_drag | default: false | json }}
+    };
+
+    // Get settings from liquid
+    const liquidSettings = {
+      {% for setting in settings %}
+        {{ setting[0] | json }}: {{ setting[1] | json }},
+      {% endfor %}
+    };
+
+    // Merge with proper type conversion
+    return {
+      ...defaults,
+      ...liquidSettings,
+      base_font_size: parseInt(liquidSettings.base_font_size || defaults.base_font_size),
+      button_size: parseInt(liquidSettings.button_size || defaults.button_size),
+      window_width: parseInt(liquidSettings.window_width || defaults.window_width),
+      window_height: parseInt(liquidSettings.window_height || defaults.window_height),
+      bubble_radius: parseInt(liquidSettings.bubble_radius || defaults.bubble_radius)
+    };
+  })();
 </script>
 
 <script src="{{ 'wc_agent_tooltip.js' | asset_url }}" defer></script>
