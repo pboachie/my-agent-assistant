@@ -284,46 +284,58 @@
       let isDragging = false;
       const header = this.tooltip.querySelector('.tooltip-header');
       const tooltip = this.tooltip;
-
-      const getInitialPosition = () => {
-        const position = this.settings.window_position || 'bottom-right';
-        const rect = tooltip.getBoundingClientRect();
-        return {
-          top: tooltip.style.top ? parseInt(tooltip.style.top) : position.includes('top') ? rect.top : window.innerHeight - rect.bottom,
-          left: tooltip.style.left ? parseInt(tooltip.style.left) : position.includes('left') ? rect.left : window.innerWidth - rect.right,
-          position
-        };
-      };
+      const chatWindow = this.window;
+      const tooltipButton = this.button;
 
       const setPosition = (top, left) => {
         const position = this.settings.window_position || 'bottom-right';
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const chatRect = chatWindow.getBoundingClientRect();
 
-        // Remove any existing positioning classes
-        tooltip.className = 'wc-agent-tooltip';
+        // Constrain to viewport
+        left = Math.max(0, Math.min(left, window.innerWidth - tooltipRect.width));
+        top = Math.max(0, Math.min(top, window.innerHeight - tooltipRect.height));
 
-        // Set absolute positioning
-        tooltip.style.position = 'fixed';
+        // Calculate chat window position relative to tooltip
+        let chatTop, chatLeft;
 
         if (position.includes('bottom')) {
-          tooltip.style.bottom = `${window.innerHeight - top - tooltip.offsetHeight}px`;
-          tooltip.style.top = 'auto';
+          chatTop = top - chatRect.height - 16; // 16px gap
         } else {
-          tooltip.style.top = `${top}px`;
-          tooltip.style.bottom = 'auto';
+          chatTop = top + tooltipRect.height + 16;
         }
 
         if (position.includes('right')) {
-          tooltip.style.right = `${window.innerWidth - left - tooltip.offsetWidth}px`;
-          tooltip.style.left = 'auto';
+          chatLeft = left + tooltipRect.width - chatRect.width;
         } else {
-          tooltip.style.left = `${left}px`;
-          tooltip.style.right = 'auto';
+          chatLeft = left;
         }
+
+        // Constrain chat window to viewport
+        chatLeft = Math.max(0, Math.min(chatLeft, window.innerWidth - chatRect.width));
+        chatTop = Math.max(0, Math.min(chatTop, window.innerHeight - chatRect.height));
+
+        // Apply positions
+        tooltip.style.position = 'fixed';
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+        tooltip.style.right = 'auto';
+        tooltip.style.bottom = 'auto';
+
+        chatWindow.style.position = 'fixed';
+        chatWindow.style.left = `${chatLeft}px`;
+        chatWindow.style.top = `${chatTop}px`;
+        chatWindow.style.right = 'auto';
+        chatWindow.style.bottom = 'auto';
       };
 
-      const dragMouseDown = (e) => {
+      const startDrag = (e) => {
+        // Don't start drag if clicking send button or other interactive elements
+        if (e.target.closest('.send-button, .control-button, .message-input')) {
+          return;
+        }
+
         e.preventDefault();
-        const initial = getInitialPosition();
         pos3 = e.clientX;
         pos4 = e.clientY;
         isDragging = true;
@@ -342,12 +354,8 @@
         pos4 = e.clientY;
 
         const rect = tooltip.getBoundingClientRect();
-        let newTop = rect.top - pos2;
-        let newLeft = rect.left - pos1;
-
-        // Constrain to viewport
-        newTop = Math.max(0, Math.min(newTop, window.innerHeight - rect.height));
-        newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - rect.width));
+        const newTop = rect.top - pos2;
+        const newLeft = rect.left - pos1;
 
         setPosition(newTop, newLeft);
       };
@@ -356,11 +364,39 @@
         isDragging = false;
         document.removeEventListener('mousemove', elementDrag);
         document.removeEventListener('mouseup', closeDragElement);
+
+        // Preserve the chat window display state
+        if (this.isOpen) {
+          chatWindow.style.display = 'flex';
+        }
       };
 
+      // Add drag handlers to both header and tooltip button
       if (header) {
-        header.addEventListener('mousedown', dragMouseDown);
+        header.addEventListener('mousedown', startDrag);
       }
+      if (tooltipButton) {
+        tooltipButton.addEventListener('mousedown', (e) => {
+          // Only allow drag with left mouse button and prevent interference with click event
+          if (e.button === 0) {
+            const dragTimeout = setTimeout(() => {
+              startDrag(e);
+            }, 100); // Small delay to differentiate between click and drag
+
+            tooltipButton.addEventListener('mouseup', () => {
+              clearTimeout(dragTimeout);
+            }, { once: true });
+          }
+        });
+      }
+
+      // Prevent click event when dragging ends
+      tooltipButton.addEventListener('click', (e) => {
+        if (this.isDragging) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }, true);
     }
   }
 
