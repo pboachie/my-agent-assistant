@@ -33,6 +33,14 @@
       this.minimizeBtn = document.querySelector('#minimize-chat');
       this.messageInput = document.querySelector('#message-input');
       this.sendButton = document.querySelector('#send-button');
+      this.voiceToggle = document.querySelector('#voice-toggle');
+      this.voiceStatus = document.querySelector('.voice-status');
+      this.message_bubble_style = document.querySelector('.message-bubble-style');
+      this.text_color = document.querySelector('.text-color');
+      this.header_color = document.querySelector('.header-color');
+      this.user_message_color = document.querySelector('.user-message-color');
+      this.agent_message_color = document.querySelector('.agent-message-color');
+      this.typingIndicator = document.querySelector('.typing-indicator');
       this.messagesContainer = document.querySelector('#messages-container');
       this.agentNameElement = document.querySelector('.agent-name');
       this.agentAvatarElement = document.querySelector('.agent-avatar');
@@ -119,10 +127,11 @@
       if (!this.tooltip) return;
 
       const cssProps = {
-        '--primary-color': this.settings.primary_color || '#121212',
-        '--secondary-color': this.settings.secondary_color || '#F8F9FA',
+        '--tooltip-color': this.settings.tooltip_color || '#121212',
+        '--header-color': this.settings.header_color || '#F8F9FA',
         '--text-color': this.settings.text_color || '#1A1A1A',
-        '--message-color': this.settings.message_color || '#FFFFFF',
+        '--user-message-color': this.settings.user_message_color || '#FFFFFF',
+        '--agent-message-color': this.settings.agent_message_color || '#FFFFFF',
         '--font-family': this.getFontFamily(),
         '--base-font-size': `${this.settings.base_font_size || 14}px`,
         '--font-weight': this.settings.font_weight || '400',
@@ -148,7 +157,7 @@
 
       // Apply message bubble style
       if (this.messagesContainer) {
-        this.messagesContainer.className = `messages-container ${this.settings.message_bubble_style}`;
+        this.messagesContainer.className = `messages-container ${this.settings.message_bubble_style} ${this.settings.user_message_color}`;
       }
 
       // Update text content
@@ -418,10 +427,10 @@
         window_height: 520,
 
         // Colors
-        primary_color: "#0055ff",
-        secondary_color: "#f8f9fa",
+        tooltip_color: "#0055ff",
+        header_color: "#f8f9fa",
         text_color: "#1a1a1a",
-        message_color: "#ffffff",
+        user_message_color: "#ffffff",
 
         // Typography
         font_family: "system",
