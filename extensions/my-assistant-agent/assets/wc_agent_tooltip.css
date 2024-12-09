@@ -73,6 +73,12 @@
   justify-content: center;
 }
 
+.tooltip-icon img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
 .tooltip-preview {
   margin-left: 8px;
   white-space: nowrap;
@@ -146,6 +152,12 @@
   background: var(--primary-color, #0055ff);
   color: white;
   margin-left: auto;
+}
+
+.agent-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
 }
 
 /* Header Styles */
